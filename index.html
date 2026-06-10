@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/level.css">
+    <script src="scripts/script.js" defer></script>
+    <title>CREATOR</title>
+</head>
+
+<body>
+    <header></header>
+
+    <main>
+        <section class="start">
+            <h2>Create your own word search game</h2>
+
+            <button class="next">Avançar</button>
+        </section>
+
+        <section class="type">
+            <button class="back">Back</button>
+            <h2>Choose a game type</h2>
+            <div class="btn-group">
+                <button class="btn-1 active" value="normal">Normal</button>
+                <button class="btn-1" value="related" disabled>Relacionado</button>
+                <button class="btn-1" value="translation" disabled>Tradução</button>
+                <button class="btn-1" value="relatedTranslation">Tradução Relacionada</button>
+            </div>
+
+            <button class="next">Avançar</button>
+        </section>
+
+        <section class="level">
+            <button class="back">Back</button>
+
+            <h2>Choose a level</h2>
+            <div class="buttons">
+                <div class="btn-group phone-available">
+                    <button class="btn-1 active" value="beginner">beginner <br> 5 x 8</button>
+                    <button class="btn-1" value="easy">easy <br> 6 x 9</button>
+                    <button class="btn-1" value="medium">medium <br> 7 x 10</button>
+                    <button class="btn-1" value="advanced">advanced <br> 8 x 12</button>
+                </div>
+
+                <div class="custom-level">
+                    <h4>Custom</h4>
+                    <button class="btn-1" value="custom">
+                        <input type="number" id="columns" placeholder="Col">
+                        X
+                        <input type="number" id="rows" placeholder="Row">
+                    </button>
+                </div>
+            </div>
+
+            <button class="next">Next</button>
+        </section>
+
+        <section class="words">
+            <button class="back">Back</button>
+
+            <div class="listing">
+                <h2>Add words</h2>
+                <form class="addWords">
+                    <input type="text" placeholder="Add a word">
+                    <button disabled>Add</button>
+                </form>
+                <ul class="wordsList">                
+                </ul>
+            </div>
+
+            <div class="table">
+            </div>
+
+            <button class="next">Concluir</button>
+        </section>
+    </main>
+
+    <footer></footer>
+</body>
+
+</html>

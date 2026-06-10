@@ -1,0 +1,280 @@
+:root {
+    font-size: 62.5%;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #fff;
+}
+
+button {
+    cursor: pointer;
+}
+
+body {
+    font-size: 1.6rem;
+    background-color: #222;
+    overflow-y: hidden;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 8.0rem;
+    background-color: #333;
+    z-index: 1;
+}
+
+section {
+    position: relative;
+    padding-top: 8.0rem;
+    height: 100vh;
+}
+
+.next,
+.back {
+    padding: 1.0rem 2.5rem;
+    border-radius: 1.0rem;
+
+    cursor: pointer;
+    transition: .3s ease;
+    text-transform: capitalize;
+    color: #000;
+}
+
+.next {
+    position: absolute;
+    bottom: 3.0rem;
+    right: 2.0rem;
+}
+
+.back {
+    position: absolute;
+    top: 11.0rem;
+    left: 2.0rem;
+}
+
+
+section.type,
+section.level {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 6.4rem;
+}
+
+
+section.words {
+    display: flex;
+    gap: 2.0rem;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+
+div.table {
+    width: 40.0rem;
+    height: 60.0rem;
+    min-width: 40.0rem;
+    min-height: 60.0rem;
+    background-color: #555;
+    border-radius: 1.6rem;
+    padding: 1.0rem;
+    display: grid;
+    position: relative;
+}
+
+.table input {
+    width: 100%;
+    height: 100%;
+    border: .1rem dashed #000;
+    background-color: transparent;
+    color: #fff;
+    text-align: center;
+}
+
+.btn-1 {
+    padding: 1.0rem 2.5rem;
+    border-radius: 1.0rem;
+    background-color: transparent;
+    border: .2rem solid #555;
+    cursor: pointer;
+    color: #ccc;
+    transition: .3s ease;
+    text-transform: capitalize;
+    line-height: 1.5;
+
+
+    &.active,
+    &:hover {
+        background-color: #555;
+        color: #fff;
+        border: .2rem solid #fff;
+    }
+}
+
+
+
+.level .buttons {
+    min-width: 60%;
+    max-width: 90%;
+    display: flex;
+    justify-content: space-evenly;
+    Align-items: center;
+    gap: 2.0rem;
+}
+
+.level .btn-group,
+.level .custom-level {
+    padding: 1.5rem;
+    border: .2rem solid #aaa;
+    border-radius: 1.0rem;
+    position: relative;
+    flex: 1;
+}
+
+.btn-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 1.0rem;
+}
+
+.custom-level {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2.0rem;
+
+    button {
+        min-width: 22.0rem, ;
+        height: 7.0rem
+    }
+}
+
+.custom-level button input {
+    width: 5.0rem;
+    padding: .5rem;
+    border: .2rem solid #555;
+    border-radius: .5rem;
+    background-color: transparent;
+    color: #fff;
+    text-align: center;
+
+    /* Firefox */
+    -moz-appearance: textfield;
+    appearance: textfield;
+
+    /* Chrome, Safari, Edge, Opera */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+}
+
+.custom-level button:hover,
+.custom-level button.active {
+    input {
+        background-color: #222;
+        color: #fff;
+        border: .2rem solid #fff;
+    }
+}
+
+.btn-group.phone-available::after {
+    content: "Available on phones";
+    position: absolute;
+    top: -1.2rem;
+    right: 1.0rem;
+    font-size: 1.2rem;
+    color: #aaa;
+
+    background-color: #222;
+    border: .2rem solid #555;
+    border-radius: 1.0rem;
+    padding: .2rem .5rem;
+}
+
+
+
+/* ---------------------- */
+/* --      SEI LA      -- */
+/* ---------------------- */
+
+.listing {
+    padding: 2.0rem;
+    border: .2rem solid #555;
+    border-radius: 2.0rem;
+    text-align: center;
+    width: 40.0rem;
+    height: 60.0rem;
+}
+
+.addWords {
+    margin: 2.0rem 0 1.0rem;
+    border: 1px solid #ccc;
+    border-radius: 5.0rem;
+    padding: .5rem .5rem;
+    display: flex;
+    align-items: center;
+
+
+    input,
+    button {
+        background-color: transparent;
+        color: #ccc;
+        border: none;
+        height: 100%;
+        outline: none;
+    }
+
+    input{
+        flex: 1;
+    }
+
+    button {
+        border: 1px solid #ccc;
+        border-radius: 5.0rem;
+        padding: 1.0rem .5rem;
+    }
+}
+
+.listing ul li {
+    list-style: none;
+    text-align: left;
+    position: relative;
+    padding: .5rem 1rem;
+    vertical-align: middle;
+
+    border: 1px solid #333;
+    border-radius: 5.0rem;
+    margin-bottom: .5rem;
+    font-size: 1.4;
+}
+
+.listing ul li button.deleteWord {
+    opacity: 0;
+    cursor: pointer;
+    transition: .3s;
+
+    background-color: red;
+    padding: .2rem;
+    border-radius: 5.0rem;
+    border: none;
+    position: absolute;
+    right: .5rem;
+}
+
+.listing ul li:hover button.deleteWord {
+    opacity: 100;
+}
