@@ -28,8 +28,8 @@
             <h2>Choose a game type</h2>
             <div class="btn-group">
                 <button class="btn-1 active" value="normal">Normal</button>
-                <button class="btn-1" value="related" disabled>Relacionado</button>
-                <button class="btn-1" value="translation" disabled>Tradução</button>
+                <button class="btn-1" value="related">Relacionado</button>
+                <button class="btn-1" value="translation">Tradução</button>
                 <button class="btn-1" value="relatedTranslation">Tradução Relacionada</button>
             </div>
 
@@ -66,11 +66,19 @@
 
             <div class="listing">
                 <h2>Add words</h2>
-                <form class="addWords">
+
+                <!-- <form class="addWords normal">
                     <input type="text" placeholder="Add a word">
                     <button disabled>Add</button>
+                </form> -->
+
+                <form class="addWords related">
+                    <input type="text" placeholder="Word" id="word">
+                    <input type="text" placeholder="Related word" id="relatedWord">
+                    <button disabled>Add</button>
                 </form>
-                <ul class="wordsList">                
+
+                <ul class="wordsList">
                 </ul>
             </div>
 

@@ -10,6 +10,121 @@ const globalEventListener = (type, selector, callback) => {
     });
 }
 
+const addWordNormal = word => {
+    if (game.words.includes(word)) {
+        showErrorModal('Essa palavra já foi adicionada.');
+        return;
+    }
+
+    game.words.push(word);
+
+    const deleteBtn = create('button');
+    deleteBtn.classList.add('deleteWord');
+    deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+
+    const li = create('li');
+    li.textContent = word;
+    li.appendChild(deleteBtn);
+
+    sel('.wordsList').appendChild(li);
+}
+
+const addWordRelated = (word, relatedWord) => {
+    if (game.words.find(w => w.word === word)) {
+        showErrorModal('Essa palavra já foi adicionada.');
+        return;
+    }
+
+    if (game.words.find(w => w.relatedWord === relatedWord)) {
+        showErrorModal('Essa palavra relacionada já foi adicionada.');
+        return;
+    }
+
+    game.words.push({ word, relatedWord });
+    
+    const deleteBtn = create('button');
+    deleteBtn.classList.add('deleteWord');
+    deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+
+    const li = create('li');
+    li.innerHTML = `<div class="wordContainer">
+                        <span class="word">${word}</span>
+                        <span class="relatedWord">${relatedWord}</span>
+                    </div>`;
+    li.appendChild(deleteBtn);
+
+    sel('.wordsList').appendChild(li);
+}
+
+const normalAddWord = () => {
+    const word = sel('form.addWords input').value.toUpperCase();
+    sel('form.addWords input').value = '';
+
+    addWordNormal(word);
+    sel('form.addWords button').disabled = true;
+};
+
+const relatedAddWord = () => {
+    const word = sel('form.addWords input').value.toUpperCase();    
+    const relatedWord = sel('form.addWords #relatedWord').value.toUpperCase();
+
+    sel('form.addWords input').value = '';
+    sel('form.addWords #relatedWord').value = '';
+    
+    addWordRelated(word, relatedWord);
+    sel('form.addWords button').disabled = true;
+};
+
+
+/*--------------------------------*/
+/*           VARIABLES            */
+/*--------------------------------*/
+
+let game = {
+    // type: '', // NOTUSED
+    level: {},
+    words: [],
+    letters: [],
+    gameMode: null
+}
+
+const levels = {
+    beginner: { name: 'beginner', rows: 8, columns: 5 },
+    easy: { name: 'easy', rows: 11, columns: 7 },
+    medium: { name: 'medium', rows: 15, columns: 9 },
+    advanced: { name: 'advanced', rows: 16, columns: 10 },
+    custom: { name: 'custom', rows: 0, columns: 0 }
+};
+
+const gameModes = {
+    normal: {
+        name: 'Normal',
+        description: 'O modo clássico de caça palavras, onde o jogador tem que encontrar as palavras listadas.',
+        addWord: normalAddWord
+    },
+
+    related: {
+        name: 'Relacionadas',
+        description: 'Nesse modo, o jogador deve buscar por palavras relacionadas às listadas. Por exemplo, se for uma relação de "antônimo", tendo listada a palavra "claro", o jogador deve procurar por "escuro".',
+        addWord: relatedAddWord
+    },
+
+    text: {
+        name: 'Texto',
+        description: 'Nesse modo as palavras a serem encontradas estão destacadas em negrito em um texto.'
+    },
+
+    normalTranslation: {
+        name: 'Tradução (normal)',
+        description: 'Nesse modo, o jogador deve encontrar as palavras listadas normalmente. A diferença é que este modo permite ao jogador clicar numa palavra da lista para ver sua tradução, sua pronúncia e uma imagem.'
+    },
+
+    relatedTranslation: {
+        name: 'Tradução (relacionadas)',
+        description: 'Nesse modo, o jogador deve buscar pela tradução das palavras listadas. Além disso, este modo permite o jogador clicar numa palavra da lista para ver sua tradução, sua pronúncia e uma imagem que a represente.'
+    }
+}
+
 
 
 /*---------------------------------*/
@@ -20,23 +135,20 @@ const buildTable = () => {
     const table = sel('.table');
 
     table.classList.remove('begginer', 'easy', 'medium', 'advanced', 'custom');
-    table.classList.add(game.level);
+    table.classList.add(game.level.name);
     table.innerHTML = '';
 
-    if (game.level === 'custom') {
+    if (game.level.name === 'custom') {
         table.style.gridTemplateRows = `repeat(${levels.custom.rows}, 1fr)`
         table.style.gridTemplateColumns = `repeat(${levels.custom.columns}, 1fr)`
     }
     else {
         table.style.gridTemplateRows = null;
         table.style.gridTemplateColumns = null;
-
     }
 
-    const level = levels[game.level];
-
-    for (let i = 1; i <= level.rows; i++) {
-        for (let j = 1; j <= level.columns; j++) {
+    for (let i = 1; i <= game.level.rows; i++) {
+        for (let j = 1; j <= game.level.columns; j++) {
             let cell = create('input');
             cell.maxLength = 1;
             cell.dataset.x = j;
@@ -94,26 +206,10 @@ const arrowWalk = (e) => {
     if (cell) { cell.focus(); }
 }
 
-const addWord = word => {
-    if (game.words.includes(word)) {
-        showErrorModal('Essa palavra já foi adicionada.');
-        return;
-    }
-
-    const deleteBtn = create('button');
-    deleteBtn.classList.add('deleteWord');
-    deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
-
-    const li = create('li');
-    li.textContent = word;
-    li.appendChild(deleteBtn);
-
-    sel('.wordsList').appendChild(li);
-}
-
-const validateWord = word => {
-    gameModes[game.type].validate(word);
-}
+// NOTUSED
+// const validateWord = word => {
+//     game.gameMode.validate(word);
+// }
 
 
 /*-----------------------------------*/
@@ -135,12 +231,12 @@ globalEventListener('click', '.level .buttons button', e => {
 });
 
 sel('.type .next').addEventListener('click', e => {
-    game.type = sel('.type .btn-group .active').value;
+    game.gameMode = gameModes[sel('.type .btn-group .active').value];
 });
 
 sel('.level .next').addEventListener('click', e => {
     let activeBtn = sel('.level .buttons .active')
-    game.level = activeBtn.value;
+    game.level = levels[activeBtn.value];
 
     if (game.level === 'custom') {
         levels.custom.rows = activeBtn.querySelector('#rows').value;
@@ -162,16 +258,14 @@ sel('form.addWords input').addEventListener('change', e => {
         sel('form.addWords button').disabled = true;
 });
 
-sel('form.addWords').addEventListener('submit', e => {
+sel('form.addWords').addEventListener('submit', (e) => {
     e.preventDefault();
+    game.gameMode.addWord();
+});
 
-    const word = sel('form.addWords input').value.toUpperCase();
-    sel('form.addWords input').value = '';
 
-    addWord(word);
-    sel('form.addWords button').disabled = true;
 
-})
+
 
 globalEventListener('click', '.listing ul li button.deleteWord i', e => {
     e.target.closest('li').remove();
@@ -183,55 +277,7 @@ globalEventListener('click', '.listing ul li button.deleteWord', e => {
 
 
 
-/*--------------------------------*/
-/*           VARIABLES            */
-/*--------------------------------*/
-
-let game = {
-    type: '',
-    level: '',
-    words: [],
-    letters: []
-}
-
-const levels = {
-    beginner: { rows: 8, columns: 5 },
-    easy: { rows: 11, columns: 7 },
-    medium: { rows: 15, columns: 9 },
-    advanced: { rows: 16, columns: 10 },
-    custom: { rows: 0, columns: 0 }
-};
-
-const gameModes = {
-    normal: {
-        name: 'Normal',
-        description: 'O modo clássico de caça palavras, onde o jogador tem que encontrar as palavras listadas.'
-    },
-
-    related: {
-        name: 'Relacionadas',
-        description: 'Nesse modo, o jogador deve buscar por palavras relacionadas às listadas. Por exemplo, se for uma relação de "antônimo", tendo listada a palavra "claro", o jogador deve procurar por "escuro".'
-    },
-
-    text: {
-        name: 'Texto',
-        description: 'Nesse modo as palavras a serem encontradas estão destacadas em negrito em um texto.'
-    },
-
-    normalTranslation: {
-        name: 'Tradução (normal)',
-        description: 'Nesse modo, o jogador deve encontrar as palavras listadas normalmente. A diferença é que este modo permite ao jogador clicar numa palavra da lista para ver sua tradução, sua pronúncia e uma imagem.'
-    },
-
-    relatedTranslation: {
-        name: 'Tradução (relacionadas)',
-        description: 'Nesse modo, o jogador deve buscar pela tradução das palavras listadas. Além disso, este modo permite o jogador clicar numa palavra da lista para ver sua tradução, sua pronúncia e uma imagem.'
-    }
-}
-
-
-
 /*---------------------------------*/
 /*              MAIN               */
 /*---------------------------------*/
-(() => {})();
+(() => { })();

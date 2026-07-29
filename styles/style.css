@@ -228,18 +228,12 @@ div.table {
     display: flex;
     align-items: center;
 
-
     input,
     button {
         background-color: transparent;
         color: #ccc;
         border: none;
-        height: 100%;
         outline: none;
-    }
-
-    input{
-        flex: 1;
     }
 
     button {
@@ -249,12 +243,37 @@ div.table {
     }
 }
 
+.addWords.normal {
+    input {
+        height: 100%;
+        flex: 1;
+    }
+}
+
+.addWords.related {
+    gap: .5rem;
+
+    label {
+        font-size: 1.1rem;
+
+    }
+
+    input {
+        width: 100%;
+        height: 100%;
+        height: none;
+    }
+}
+
 .listing ul li {
     list-style: none;
     text-align: left;
-    position: relative;
     padding: .5rem 1rem;
-    vertical-align: middle;
+ 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.0rem;
 
     border: 1px solid #333;
     border-radius: 5.0rem;
@@ -271,10 +290,23 @@ div.table {
     padding: .2rem;
     border-radius: 5.0rem;
     border: none;
-    position: absolute;
-    right: .5rem;
 }
 
 .listing ul li:hover button.deleteWord {
     opacity: 100;
+}
+
+.listing ul li .wordContainer {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.0rem;
+
+    span {
+        width: 50%;
+        border: 1px solid #555;
+        border-radius: 5.0rem;
+        padding: 0 .5rem;
+    }
 }
