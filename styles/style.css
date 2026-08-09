@@ -220,6 +220,18 @@ div.table {
     height: 60.0rem;
 }
 
+.listing .error{
+    color: red;
+    font-size: 1.2rem;
+    margin-top: 1.0rem;
+    display: none;
+    margin-bottom: 1.0rem;
+
+    &.visible {
+        display: block;
+    }
+}
+
 .addWords {
     margin: 2.0rem 0 1.0rem;
     border: 1px solid #ccc;
@@ -245,7 +257,6 @@ div.table {
 
 .addWords.normal {
     input {
-        height: 100%;
         flex: 1;
     }
 }
@@ -255,12 +266,10 @@ div.table {
 
     label {
         font-size: 1.1rem;
-
     }
 
     input {
         width: 100%;
-        height: 100%;
         height: none;
     }
 }

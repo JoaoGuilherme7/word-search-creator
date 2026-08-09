@@ -10,14 +10,20 @@ const globalEventListener = (type, selector, callback) => {
     });
 }
 
-const addWordNormal = word => {
-    if (game.words.includes(word)) {
-        showErrorModal('Essa palavra já foi adicionada.');
-        return;
-    }
+const showError = (msg) => {
+    sel('form.addWords').style.borderColor = 'red';
 
-    game.words.push(word);
+    const error = sel('.error');
+    error.classList.add('visible');
+    error.textContent = msg;
+}
 
+const hideError = () => {
+    sel('form.addWords').style.borderColor = '#ccc';
+    sel('.error').classList.remove('visible');
+}
+
+const wordToLiNormal = word => {
     const deleteBtn = create('button');
     deleteBtn.classList.add('deleteWord');
     deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
@@ -29,19 +35,8 @@ const addWordNormal = word => {
     sel('.wordsList').appendChild(li);
 }
 
-const addWordRelated = (word, relatedWord) => {
-    if (game.words.find(w => w.word === word)) {
-        showErrorModal('Essa palavra já foi adicionada.');
-        return;
-    }
+const wordToLiRelated = (word, relatedWord) => {
 
-    if (game.words.find(w => w.relatedWord === relatedWord)) {
-        showErrorModal('Essa palavra relacionada já foi adicionada.');
-        return;
-    }
-
-    game.words.push({ word, relatedWord });
-    
     const deleteBtn = create('button');
     deleteBtn.classList.add('deleteWord');
     deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
@@ -56,22 +51,49 @@ const addWordRelated = (word, relatedWord) => {
     sel('.wordsList').appendChild(li);
 }
 
-const normalAddWord = () => {
+const addWordNormal = () => {
     const word = sel('form.addWords input').value.toUpperCase();
+
+    if (!word) return;
+
+    if (game.words.includes(word)) {
+        showError('Palavra já adicionada.');
+        return;
+    }
+
+    if (sel('form.addWords .error').classList.contains('visible'))
+        hideError();
+
+    game.words.push(word);
+
     sel('form.addWords input').value = '';
 
-    addWordNormal(word);
+    wordToLiNormal(word);
     sel('form.addWords button').disabled = true;
 };
 
-const relatedAddWord = () => {
-    const word = sel('form.addWords input').value.toUpperCase();    
+const addWordRelated = () => {
+    const word = sel('form.addWords input').value.toUpperCase();
     const relatedWord = sel('form.addWords #relatedWord').value.toUpperCase();
 
+    if (!word || !relatedWord) return;
+    if (game.words.find(w => w.word === word)) {
+        showError('Palavra já adicionada.');
+        return;
+    }
+    if (game.words.find(w => w.relatedWord === relatedWord)) {
+        showError('Palavra relacionada já adicionada.');
+        return;
+    }
+
+    if (sel('form.addWords .error').classList.contains('visible'))
+        hideError();
+
+    game.words.push({ word, relatedWord });
     sel('form.addWords input').value = '';
     sel('form.addWords #relatedWord').value = '';
-    
-    addWordRelated(word, relatedWord);
+
+    wordToLiRelated(word, relatedWord);
     sel('form.addWords button').disabled = true;
 };
 
@@ -81,7 +103,6 @@ const relatedAddWord = () => {
 /*--------------------------------*/
 
 let game = {
-    // type: '', // NOTUSED
     level: {},
     words: [],
     letters: [],
@@ -89,37 +110,47 @@ let game = {
 }
 
 const levels = {
-    beginner: { name: 'beginner', rows: 8, columns: 5 },
-    easy: { name: 'easy', rows: 11, columns: 7 },
-    medium: { name: 'medium', rows: 15, columns: 9 },
-    advanced: { name: 'advanced', rows: 16, columns: 10 },
-    custom: { name: 'custom', rows: 0, columns: 0 }
+    beginner:   { name: 'beginner', rows: 8,    columns: 5  },
+    easy:       { name: 'easy',     rows: 11,   columns: 7  },
+    medium:     { name: 'medium',   rows: 15,   columns: 9  },
+    advanced:   { name: 'advanced', rows: 16,   columns: 10 },
+    custom:     { name: 'custom',   rows: 0,    columns: 0  }
 };
 
 const gameModes = {
     normal: {
+        className: 'normal',
         name: 'Normal',
         description: 'O modo clássico de caça palavras, onde o jogador tem que encontrar as palavras listadas.',
-        addWord: normalAddWord
+        addWord: addWordNormal,
+        formHTML: `<input type="text" placeholder="Add a word">
+                       <button type="submit" disabled>Add</button>`
     },
 
     related: {
+        className: 'related',
         name: 'Relacionadas',
         description: 'Nesse modo, o jogador deve buscar por palavras relacionadas às listadas. Por exemplo, se for uma relação de "antônimo", tendo listada a palavra "claro", o jogador deve procurar por "escuro".',
-        addWord: relatedAddWord
+        addWord: addWordRelated,
+        formHTML: `<input type="text" placeholder="Word" id="word">
+                   <input type="text" placeholder="Related word" id="relatedWord">
+                   <button type="submit" disabled>Add</button>`
     },
 
     text: {
+        className: 'text',
         name: 'Texto',
         description: 'Nesse modo as palavras a serem encontradas estão destacadas em negrito em um texto.'
     },
 
     normalTranslation: {
+        className: 'normalTranslation',
         name: 'Tradução (normal)',
         description: 'Nesse modo, o jogador deve encontrar as palavras listadas normalmente. A diferença é que este modo permite ao jogador clicar numa palavra da lista para ver sua tradução, sua pronúncia e uma imagem.'
     },
 
     relatedTranslation: {
+        className: 'relatedTranslation',
         name: 'Tradução (relacionadas)',
         description: 'Nesse modo, o jogador deve buscar pela tradução das palavras listadas. Além disso, este modo permite o jogador clicar numa palavra da lista para ver sua tradução, sua pronúncia e uma imagem que a represente.'
     }
@@ -206,11 +237,6 @@ const arrowWalk = (e) => {
     if (cell) { cell.focus(); }
 }
 
-// NOTUSED
-// const validateWord = word => {
-//     game.gameMode.validate(word);
-// }
-
 
 /*-----------------------------------*/
 /*          EVENT LISTENERS          */
@@ -232,6 +258,17 @@ globalEventListener('click', '.level .buttons button', e => {
 
 sel('.type .next').addEventListener('click', e => {
     game.gameMode = gameModes[sel('.type .btn-group .active').value];
+
+    let form = sel('.addWords');
+    form.classList.remove('normal', 'related');
+    form.classList.add(game.gameMode.className.toLowerCase());
+    form.innerHTML = '';
+    form.innerHTML = game.gameMode.formHTML;
+
+    sel('form.addWords input').addEventListener('change', (e) => {
+        e.preventDefault();
+        sel('form.addWords button').disabled = !e.target.value.trim();
+    });
 });
 
 sel('.level .next').addEventListener('click', e => {
@@ -249,13 +286,6 @@ sel('.level .next').addEventListener('click', e => {
     }
 
     buildTable();
-});
-
-sel('form.addWords input').addEventListener('change', e => {
-    if (e.target.value.length >= 2)
-        sel('form.addWords button').disabled = false;
-    else
-        sel('form.addWords button').disabled = true;
 });
 
 sel('form.addWords').addEventListener('submit', (e) => {
