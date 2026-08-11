@@ -61,7 +61,7 @@ const addWordNormal = () => {
         return;
     }
 
-    if (sel('form.addWords .error').classList.contains('visible'))
+    if (sel('.listing p.error').classList.contains('visible'))
         hideError();
 
     game.words.push(word);
@@ -86,7 +86,7 @@ const addWordRelated = () => {
         return;
     }
 
-    if (sel('form.addWords .error').classList.contains('visible'))
+    if (sel('.listing p.error').classList.contains('visible'))
         hideError();
 
     game.words.push({ word, relatedWord });
@@ -94,6 +94,37 @@ const addWordRelated = () => {
     sel('form.addWords #relatedWord').value = '';
 
     wordToLiRelated(word, relatedWord);
+    sel('form.addWords button').disabled = true;
+};
+
+const addWordText = () => {
+    const word = sel('form.addWords input').value.toUpperCase();
+    const text = sel('form.addWords textarea').value;
+
+    if (!word) return;
+    if (!text) {
+        showError('Por favor, adicione um texto.');
+        return;
+    }
+
+    if (game.words.includes(word)) {
+        showError('Palavra já adicionada.');
+        return;
+    }
+
+    if(!text.toLowerCase().includes(word.toLowerCase())) {
+        showError('Palavra não encontrada no texto.');
+        return;
+    }
+
+    if (sel('.listing p.error').classList.contains('visible'))
+        hideError();
+
+    game.words.push(word);
+
+    sel('form.addWords input').value = '';
+
+    wordToLiNormal(word);
     sel('form.addWords button').disabled = true;
 };
 
@@ -124,7 +155,7 @@ const gameModes = {
         description: 'O modo clássico de caça palavras, onde o jogador tem que encontrar as palavras listadas.',
         addWord: addWordNormal,
         formHTML: `<input type="text" placeholder="Add a word">
-                       <button type="submit" disabled>Add</button>`
+                   <button type="submit" disabled>Add</button>`
     },
 
     related: {
@@ -140,7 +171,11 @@ const gameModes = {
     text: {
         className: 'text',
         name: 'Texto',
-        description: 'Nesse modo as palavras a serem encontradas estão destacadas em negrito em um texto.'
+        description: 'Nesse modo as palavras a serem encontradas estão destacadas em negrito em um texto.',
+        addWord: addWordText,
+        formHTML: `<textarea placeholder="Add a text"></textarea>
+                   <input type="text" placeholder="Add a word">
+                   <button type="submit" disabled>Add</button>`
     },
 
     normalTranslation: {
