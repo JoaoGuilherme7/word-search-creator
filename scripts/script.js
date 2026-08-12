@@ -112,7 +112,7 @@ const addWordText = () => {
         return;
     }
 
-    if(!text.toLowerCase().includes(word.toLowerCase())) {
+    if(!text.split(' ').map(w => w.toLowerCase()'').includes(word.toLowerCase())) {
         showError('Palavra não encontrada no texto.');
         return;
     }
