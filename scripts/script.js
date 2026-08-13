@@ -3,12 +3,17 @@
 /*---------------------------------*/
 const sel = s => document.querySelector(s);
 const selAll = s => document.querySelectorAll(s);
-const create = e => document.createElement(e);
+const create = tag => document.createElement(tag);
 const globalEventListener = (type, selector, callback) => {
     document.addEventListener(type, e => {
         if (e.target.matches(selector)) callback(e);
     });
 }
+
+const cleanPunctuation = (text) =>  text.trim().replace(/[^a-zA-Z0-9\s]/g, "");
+const cleanAccents = (text) => text.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const cleanText = (text) =>  (cleanAccents(cleanPunctuation(text)));
+
 
 const showError = (msg) => {
     sel('form.addWords').style.borderColor = 'red';
@@ -23,6 +28,8 @@ const hideError = () => {
     sel('.error').classList.remove('visible');
 }
 
+
+// NORMAL MODE
 const wordToLiNormal = word => {
     const deleteBtn = create('button');
     deleteBtn.classList.add('deleteWord');
@@ -30,22 +37,6 @@ const wordToLiNormal = word => {
 
     const li = create('li');
     li.textContent = word;
-    li.appendChild(deleteBtn);
-
-    sel('.wordsList').appendChild(li);
-}
-
-const wordToLiRelated = (word, relatedWord) => {
-
-    const deleteBtn = create('button');
-    deleteBtn.classList.add('deleteWord');
-    deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
-
-    const li = create('li');
-    li.innerHTML = `<div class="wordContainer">
-                        <span class="word">${word}</span>
-                        <span class="relatedWord">${relatedWord}</span>
-                    </div>`;
     li.appendChild(deleteBtn);
 
     sel('.wordsList').appendChild(li);
@@ -72,9 +63,27 @@ const addWordNormal = () => {
     sel('form.addWords button').disabled = true;
 };
 
+
+// RELATED MODE
+const wordToLiRelated = (word, relatedWord) => {
+
+    const deleteBtn = create('button');
+    deleteBtn.classList.add('deleteWord');
+    deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
+
+    const li = create('li');
+    li.innerHTML = `<div class="wordContainer">
+                        <span class="word">${word}</span>
+                        <span class="relatedWord">${relatedWord}</span>
+                    </div>`;
+    li.appendChild(deleteBtn);
+
+    sel('.wordsList').appendChild(li);
+}
+
 const addWordRelated = () => {
-    const word = sel('form.addWords input').value.toUpperCase();
-    const relatedWord = sel('form.addWords #relatedWord').value.toUpperCase();
+    const word = sel('form.addWords input').value.trim().toUpperCase();
+    const relatedWord = sel('form.addWords #relatedWord').value.trim().toUpperCase();
 
     if (!word || !relatedWord) return;
     if (game.words.find(w => w.word === word)) {
@@ -97,11 +106,14 @@ const addWordRelated = () => {
     sel('form.addWords button').disabled = true;
 };
 
+
+// TEXT MODE
 const addWordText = () => {
-    const word = sel('form.addWords input').value.toUpperCase();
+    const word = sel('form.addWords input').value.trim().toUpperCase();
     const text = sel('form.addWords textarea').value;
 
     if (!word) return;
+
     if (!text) {
         showError('Por favor, adicione um texto.');
         return;
@@ -112,7 +124,7 @@ const addWordText = () => {
         return;
     }
 
-    if(!text.split(' ').map(w => w.toLowerCase()'').includes(word.toLowerCase())) {
+    if(!cleanPunctuation(text).split(' ').map(w => w.toLowerCase()).includes(word.toLowerCase())) {
         showError('Palavra não encontrada no texto.');
         return;
     }
