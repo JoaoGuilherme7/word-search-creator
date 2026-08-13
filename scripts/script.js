@@ -10,7 +10,7 @@ const globalEventListener = (type, selector, callback) => {
     });
 }
 
-const cleanPunctuation = (text) =>  text.trim().replace(/[^a-zA-Z0-9\s]/g, "");
+const cleanPunctuation = (text) => text.trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, ""); 
 const cleanAccents = (text) => text.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 const cleanText = (text) =>  (cleanAccents(cleanPunctuation(text)));
 
