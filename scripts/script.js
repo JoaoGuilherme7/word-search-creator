@@ -3,12 +3,17 @@
 /*---------------------------------*/
 const sel = s => document.querySelector(s);
 const selAll = s => document.querySelectorAll(s);
-const create = e => document.createElement(e);
+const create = tag => document.createElement(tag);
 const globalEventListener = (type, selector, callback) => {
     document.addEventListener(type, e => {
         if (e.target.matches(selector)) callback(e);
     });
 }
+
+const cleanPunctuation = (text) => text.trim().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, ""); 
+const cleanAccents = (text) => text.trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const cleanText = (text) =>  (cleanAccents(cleanPunctuation(text)));
+
 
 const showError = (msg) => {
     sel('form.addWords').style.borderColor = 'red';
@@ -23,6 +28,8 @@ const hideError = () => {
     sel('.error').classList.remove('visible');
 }
 
+
+// NORMAL MODE
 const wordToLiNormal = word => {
     const deleteBtn = create('button');
     deleteBtn.classList.add('deleteWord');
@@ -35,6 +42,29 @@ const wordToLiNormal = word => {
     sel('.wordsList').appendChild(li);
 }
 
+const addWordNormal = () => {
+    const word = sel('form.addWords input').value.toUpperCase();
+
+    if (!word) return;
+
+    if (game.words.includes(word)) {
+        showError('Palavra já adicionada.');
+        return;
+    }
+
+    if (sel('.listing p.error').classList.contains('visible'))
+        hideError();
+
+    game.words.push(word);
+
+    sel('form.addWords input').value = '';
+
+    wordToLiNormal(word);
+    sel('form.addWords button').disabled = true;
+};
+
+
+// RELATED MODE
 const wordToLiRelated = (word, relatedWord) => {
 
     const deleteBtn = create('button');
@@ -51,30 +81,9 @@ const wordToLiRelated = (word, relatedWord) => {
     sel('.wordsList').appendChild(li);
 }
 
-const addWordNormal = () => {
-    const word = sel('form.addWords input').value.toUpperCase();
-
-    if (!word) return;
-
-    if (game.words.includes(word)) {
-        showError('Palavra já adicionada.');
-        return;
-    }
-
-    if (sel('form.addWords .error').classList.contains('visible'))
-        hideError();
-
-    game.words.push(word);
-
-    sel('form.addWords input').value = '';
-
-    wordToLiNormal(word);
-    sel('form.addWords button').disabled = true;
-};
-
 const addWordRelated = () => {
-    const word = sel('form.addWords input').value.toUpperCase();
-    const relatedWord = sel('form.addWords #relatedWord').value.toUpperCase();
+    const word = sel('form.addWords input').value.trim().toUpperCase();
+    const relatedWord = sel('form.addWords #relatedWord').value.trim().toUpperCase();
 
     if (!word || !relatedWord) return;
     if (game.words.find(w => w.word === word)) {
@@ -86,7 +95,7 @@ const addWordRelated = () => {
         return;
     }
 
-    if (sel('form.addWords .error').classList.contains('visible'))
+    if (sel('.listing p.error').classList.contains('visible'))
         hideError();
 
     game.words.push({ word, relatedWord });
@@ -94,6 +103,40 @@ const addWordRelated = () => {
     sel('form.addWords #relatedWord').value = '';
 
     wordToLiRelated(word, relatedWord);
+    sel('form.addWords button').disabled = true;
+};
+
+
+// TEXT MODE
+const addWordText = () => {
+    const word = sel('form.addWords input').value.trim().toUpperCase();
+    const text = sel('form.addWords textarea').value;
+
+    if (!word) return;
+
+    if (!text) {
+        showError('Por favor, adicione um texto.');
+        return;
+    }
+
+    if (game.words.includes(word)) {
+        showError('Palavra já adicionada.');
+        return;
+    }
+
+    if(!cleanPunctuation(text).split(' ').map(w => w.toLowerCase()).includes(word.toLowerCase())) {
+        showError('Palavra não encontrada no texto.');
+        return;
+    }
+
+    if (sel('.listing p.error').classList.contains('visible'))
+        hideError();
+
+    game.words.push(word);
+
+    sel('form.addWords input').value = '';
+
+    wordToLiNormal(word);
     sel('form.addWords button').disabled = true;
 };
 
@@ -124,7 +167,7 @@ const gameModes = {
         description: 'O modo clássico de caça palavras, onde o jogador tem que encontrar as palavras listadas.',
         addWord: addWordNormal,
         formHTML: `<input type="text" placeholder="Add a word">
-                       <button type="submit" disabled>Add</button>`
+                   <button type="submit" disabled>Add</button>`
     },
 
     related: {
@@ -140,7 +183,11 @@ const gameModes = {
     text: {
         className: 'text',
         name: 'Texto',
-        description: 'Nesse modo as palavras a serem encontradas estão destacadas em negrito em um texto.'
+        description: 'Nesse modo as palavras a serem encontradas estão destacadas em negrito em um texto.',
+        addWord: addWordText,
+        formHTML: `<textarea placeholder="Add a text"></textarea>
+                   <input type="text" placeholder="Add a word">
+                   <button type="submit" disabled>Add</button>`
     },
 
     normalTranslation: {
